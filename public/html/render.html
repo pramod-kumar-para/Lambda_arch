@@ -1,0 +1,125 @@
+<!Doctype html>
+<html>
+<head>
+    <title>Render</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/c3/0.4.10/c3.min.css" rel="stylesheet" >
+    <script src="https://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/c3/0.4.10/c3.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.5/css/materialize.min.css">
+    <!-- Compiled and minified JavaScript -->
+    <script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
+    <style>
+        .container{
+            text-align:center;
+        }
+        #chart{
+            margin-top:100px;
+        }
+    </style>
+</head>
+
+<body>
+<script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.5/js/materialize.min.js"></script>
+<script src="http://localhost:9090/track"></script>
+
+<div class="container">
+
+
+
+    <a class='dropdown-button btn' href='#' id="view1" data-activates='dropdown2'>Select Event <i class="mdi-navigation-arrow-drop-down right"></i></a>
+    <ul id='dropdown2' class='dropdown-content dropdown-content collection' style="margin-right:25px">
+        <li><a href="#!" onclick="set_event('browser','browser')">browser</a></li>
+        <li><a href="#!" onclick="set_event('agent','agent')" >agent</a></li>
+        <li><a href="#!" onclick="set_event('page_name','pages')">pages</a></li>
+        <li><a href="#!" onclick="set_event('domain_name','hostname')">hostname</a></li>
+
+    </ul>
+
+    <a class='dropdown-button btn ' id="view" href='#' data-activates='dropdown1' >Select View<i class="mdi-navigation-arrow-drop-down right"></i></a>
+
+    <!-- Dropdown Structure -->
+    <ul id='dropdown1' class='dropdown-content dropdown-content collection' style="margin-right:25px">
+        <li><a href="#!" onclick="generate('pie')">pie</a></li>
+        <li><a href="#!" onclick="generate('line')" >line</a></li>
+        <li><a href="#!" onclick="generate('bar')">bar</a></li>
+        <li><a href="#!" onclick="generate('donut')">donut</a></li>
+
+    </ul>
+
+<div id="chart1">
+    <div id="chart">
+
+    </div>
+</div>
+</div>
+<script type="text/javascript">
+
+$('#view').hide();
+var query_data={
+    database_name:'lambda_arch'
+}
+
+    function set_event(event_name,name){
+        document.getElementById('view1').text=name;
+        query_data.event=event_name;
+        $('#view').show();
+
+    }
+
+    (function($) {
+        $(function() {
+
+            $('.dropdown-button').dropdown({
+                        inDuration: 300,
+                        outDuration: 225,
+                        hover: true, // Activate on hover
+                        belowOrigin: true, // Displays dropdown below the button
+                        alignment: 'right' // Displays dropdown with edge aligned to the left of button
+                    }
+            );
+
+        }); // End Document Ready
+    })(jQuery); // End of jQuery name space
+
+    var socket=io.connect('http://localhost:9090');
+    socket.emit('get_collection');
+    socket.on('send_collection',function(data){
+        console.log(data);
+    })
+
+
+$('#chart1').click(function(){
+
+    generate(document.getElementById('view').text);
+    return;
+
+});
+function generate(type){
+        document.getElementById('view').text=type;
+
+        var gen_data=[];
+        var socket=io.connect('http://localhost:9090');
+        socket.emit('get_data',query_data);
+        socket.on('send_response',function(data){
+            gen_data=data;
+            console.log(data);
+            var form;
+            if(type=='chart')
+                form=''
+            else
+                form=type;
+            var chart = c3.generate({
+                bindto: '#chart',
+                data: {
+                    columns: data,
+                    type:form
+                }
+            });
+
+        });
+
+    }
+</script>
+</body>
+</html>

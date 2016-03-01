@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Register</title>
+    <link href="http://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.5/css/materialize.min.css">
+
+    <!-- Compiled and minified JavaScript -->
+    <script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
+    <style>
+        h1{
+            text-align: center;
+        }
+        .container{
+            text-align:center;
+        }
+
+        a{
+            margin-top:25px;
+        }
+        #response_box{
+            margin-top:150px;
+        }
+        #data_form{
+            margin-top:100px;
+        }
+
+
+</style>
+</head>
+<body >
+<script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+ <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.5/js/materialize.min.js"></script>
+<script src="http://localhost:9090/track"></script>
+
+
+
+
+<div class="container">
+    <!-- Page Content goes here -->
+
+
+    <div class="col s12"><span class="flow-text" style="font-size:50px">Welcome, Please Register</span></div>
+<div id="underline" class="#4db6ac teal lighten-2"></div>
+    <div class="card-panel" id="response_box">
+        <span class="blue-text text-darken-2">You have successfully registered, you can login now</span>
+    </div>
+    <div class="column" id="data_form">
+        <div class="col s12">
+            <div class="column">
+                <div class="input-field col s6">
+                    <i class="material-icons prefix">account_circle</i>
+                    <input id="icon_prefix" name="userName" type="text" class="userName">
+                    <label for="icon_prefix">User Name</label>
+                </div>
+
+                <div class="input-field col s6">
+                    <i class="material-icons prefix">tab</i>
+                    <input id="icon_prefix" name="domainName" type="text" class="domainName">
+                    <label for="icon_prefix">Domain Name</label>
+                </div>
+
+                <div class="input-field col s6">
+                    <i class="material-icons prefix">email</i>
+                    <input id="icon_prefix" name="email" type="text" class="email">
+                    <label for="icon_prefix">Email Id</label>
+                </div>
+
+                <div class="input-field col s6">
+                    <i class="material-icons prefix">phone</i>
+                    <input id="icon_telephone" name="mobileNumber" type="tel" class="mobileNumber">
+                    <label for="icon_telephone">Telephone</label>
+                </div>
+            </div>
+
+            <a href="#!" onclick="validate()" class="btn waves-effect waves-red">Submit</a>
+        </div>
+    </div>
+</div>
+<br>
+<div class="col s12 m4 center" id="spinner">
+
+    <div class="preloader-wrapper active">
+        <div class="spinner-layer spinner-red-only">
+            <div class="circle-clipper left">
+                <div class="circle"></div>
+            </div><div class="gap-patch">
+            <div class="circle"></div>
+        </div><div class="circle-clipper right">
+            <div class="circle"></div>
+        </div>
+        </div>
+    </div>
+
+</div>
+    </body>
+<script>
+    $('#spinner').hide();
+
+    $('#response_box').hide();
+    var form_data = {};
+    function validate(){
+
+        var userName=document.querySelector('input#icon_prefix.userName').value
+        var domainName=document.querySelector('input#icon_prefix.domainName').value
+        var email=document.querySelector('input#icon_prefix.email').value
+        var mobileNumber=document.querySelector('input#icon_telephone.mobileNumber').value
+
+        if(userName!="" && domainName!="" && mobileNumber!="" && email!="") {
+            form_data.userName=userName;
+            form_data.domainName=domainName;
+            form_data.mobileNumber=mobileNumber;
+            if(validateEmail(email)==true){
+                form_data.email=email;
+               console.log(form_data);
+                submit_form(form_data);
+            } else{
+                alert('Invalid Email Address');
+            }
+        } else{
+            alert('please enter all the fields');
+        }
+    }
+
+    function submit_form(form_data){
+        $('#spinner').show()
+        form_data.timestamp=new Date().getTime();
+        var socket=io.connect('http://localhost:9090');
+        socket.emit('send_form_data',form_data);
+        socket.on('success',function(){
+            $('#data_form').hide()
+            $('#spinner').hide();
+            $('#response_box').show()
+        })
+    }
+
+    function validateEmail(email) {
+        var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+        return re.test(email);
+    }
+
+
+</script>
+
+</html>
