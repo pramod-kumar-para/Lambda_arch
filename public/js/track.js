@@ -13,8 +13,8 @@
         browser: navigator.appName,
         page_url: location.href,
         page_name:document.title,
-        domain_name:location.hostname,
-        //domain_name:'google',
+        //domain_name:location.hostname,
+        domain_name:'abcd',
         referrer:document.referrer.split('/')[2],
         origin:window.location.origin,
         event_name:'page_views'

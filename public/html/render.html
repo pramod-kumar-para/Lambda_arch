@@ -24,15 +24,20 @@
 <script src="http://localhost:9090/track"></script>
 
 <div class="container">
-    <div class="row">
-        <form class="col s12">
-            <div class="row">
-                <div class="input-field col s12">
+    <div class="column">
+        <form class="col s6">
+            <div class="column">
+
+                <div class="input-field col s6">
                     <input id="domain" type="text" class="validate">
                     <label for="domain" >Domain</label>
                 </div>
+                <div class="input-field col s6">
+                    <input id="password" type="password" class="validate">
+                    <label for="password" >password</label>
+                </div>
 
-            </div>
+                </div>
         </form>
     </div>
 
@@ -69,16 +74,14 @@
 
 $('#view').hide();
 
-
-var query_data={
+ query_data={
     //database_name:location.hostname
-    database_name:'google'
+
 }
 
-$('#chart1').click(function(){
+$('#chart1').on('click',function(){
     generate(document.getElementById('view').textContent)
 })
-
 
     function set_event(event_name,name){
         document.getElementById('view1').text=name;
@@ -100,7 +103,7 @@ $('#chart1').click(function(){
         }); // End Document Ready
     })(jQuery); // End of jQuery name space
 
-    var socket=io.connect('http://localhost:9090');
+    var socket=io.connect('http://localhost:9091');
   socket.emit('get_collection',query_data);
     socket.emit('names',query_data)
     socket.on('database_list',function(data){
@@ -116,29 +119,48 @@ function generate(type){
         document.getElementById('view').text=type;
 
         var gen_data=[];
-        var socket=io.connect('http://localhost:9090');
+        var socket=io.connect('http://localhost:9091');
 
         query_data.database_name=document.getElementById('domain').value;
-        socket.emit('get_data',query_data);
-        socket.on('send_response',function(data){
-            gen_data=data;
-            console.log(data);
+        query_data.password=document.getElementById('password').value;
+
+    if(query_data.database_name!=""&&query_data.password!="") {
+
+        socket.emit('get_data', query_data);
+        socket.on('send_response', function (data) {
+            gen_data = data;
+            console.log(data[0][0]);
+            var obj = {};
+            for (i = 0; i < data.length; i++) {
+                obj[data[i][0].toString()] = d3.format('#')
+            }
+            console.log(obj)
             var form;
-            if(type=='chart')
-                form=''
+            if (type == 'chart')
+                form = ''
             else
-                form=type;
+                form = type;
             var chart = c3.generate({
                 bindto: '#chart',
                 data: {
                     columns: data,
-                    type:form
+                    type: form,
+
+                    labels: {
+//            format: function (v, id, i, j) { return "Default Format"; },
+                        format: obj
+                    }
                 }
             });
 
+
         });
 
+
     }
+    }
+
+
 </script>
 </body>
 </html>

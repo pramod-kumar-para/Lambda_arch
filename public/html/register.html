@@ -54,7 +54,11 @@
                     <input id="icon_prefix" name="userName" type="text" class="userName">
                     <label for="icon_prefix">User Name</label>
                 </div>
-
+                <div class="input-field col s6">
+                    <i class="material-icons prefix">vpn_key</i>
+                    <input id="icon_prefix" name="password" type="password" class="password">
+                    <label for="icon_prefix">Password</label>
+                </div>
                 <div class="input-field col s6">
                     <i class="material-icons prefix">tab</i>
                     <input id="icon_prefix" name="domainName" type="text" class="domainName">
@@ -104,6 +108,7 @@
     function validate(){
 
         var userName=document.querySelector('input#icon_prefix.userName').value
+        var password=document.querySelector(('input#icon_prefix.password')).value
         var domainName=document.querySelector('input#icon_prefix.domainName').value
         var email=document.querySelector('input#icon_prefix.email').value
         var mobileNumber=document.querySelector('input#icon_telephone.mobileNumber').value
@@ -112,6 +117,7 @@
             form_data.userName=userName;
             form_data.domainName=domainName;
             form_data.mobileNumber=mobileNumber;
+            form_data.password=password
             if(validateEmail(email)==true){
                 form_data.email=email;
                console.log(form_data);
