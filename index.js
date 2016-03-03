@@ -19,8 +19,7 @@ var MongoClient = require('mongodb').MongoClient;
 
 
 
-
-            // allows static file serving through url, public is the root directory
+// allows static file serving through url, public is the root directory
 
     app.use(express.static('public'));
 
@@ -28,43 +27,38 @@ var MongoClient = require('mongodb').MongoClient;
         response.sendFile(__dirname+'/public/js/track.js')
     })
 
-            // home page
+// home page
 
     app.get('/home',function(request,response){
         response.sendFile(__dirname+'/public/html/home.html');
     });
 
-
-            // registration page
+// registration page
 
     app.get('/register',function(request,response){
         response.sendFile(__dirname+'/public/html/register.html');
     });
 
-            //login page
+//login page
 
     app.get('/login',function(request,response){
         response.sendFile(__dirname+'/public/html/login.html');
     })
 
-            // reporting page
+// reporting page
 
     app.get('/render',function(request,response){
         response.sendFile(__dirname+'/public/html/render.html')
     })
-            // socket connection
+
+// socket connection
 
     io.sockets.on('connection',function(socket){
-
-
         socket.on('send_form_data',function(data){
-
             console.log('[USER]'+' A user registered')
-
             var userName='pramodkumarp95',
-                password='ihavegotmyownways',
+                password='',
                 timeStamp=new Date().getTime();
-
             transporter = nodeMailer.createTransport(
                 smtpTransport('smtps://pramodkumarp95%40gmail.com:ihavegotmyownways@smtp.gmail.com')
             );
