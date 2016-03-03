@@ -91,64 +91,56 @@ var MongoClient = require('mongodb').MongoClient;
                         console.log('[INFO] '+'Email sent successfully');
                         socket.emit('success','');
                     }
-
             })
 
             // connect to database
-            mongoose.connect('mongodb://localhost/'+data.domainName,function(err){
 
+            mongoose.connect('mongodb://localhost/'+data.domainName,function(err){
                 if(err)
                     console.error('Connection failed ,Check if Mongo instance is started?')
                 else
                     console.log('[INFO] '+'MONGODB:Connection established successfully');
-
             })
 
             // inserting all registered users into the database
 
             db.collection(data.domainName).insert(data,function(response){
                     console.log(response);
-
                 mongoose.disconnect();
             });
 
-
         })
 
+            // tracked data
+
         socket.on('custom_data',function(data){
-            // inserting all page data into the database
-
             console.log('custom_data');
-            // connect to database
-            mongoose.connect('mongodb://localhost/'+data.domain_name,function(err){
 
+            // connect to database
+
+            mongoose.connect('mongodb://localhost/'+data.domain_name,function(err){
                 if(err)
                     console.error('Connection failed ,Check if Mongo instance is started?')
                 else
                     console.log('[INFO] '+'MONGODB:Connection established successfully');
-
             })
 
-            // inserting all registered users into the database
+            // inserting tracked data into corresponding DB
 
             db.collection(data.event_name.toString()).insert(data,function(response){
-                console.log(response);
                 mongoose.disconnect();
             });
         })
 
+            // for dashboards
+
         socket.on('get_data',function(data){
-            console.log(data);
             var domain_name=data;
             var url = 'mongodb://localhost:27017/'+data.database_name;
-
             MongoClient.connect(url, function(err, db) {
-
                 aggregateData(db, function() {
                     db.close();
                 });
-
-
             });
 
             var aggregateData = function(db, callback) {
@@ -179,18 +171,11 @@ var MongoClient = require('mongodb').MongoClient;
             };
         })
 
+            // to get list of collections in database
 
         socket.on('get_collection',function(data){
             var item_list=[]
             var url = 'mongodb://localhost:27017/'+data.database_name;
-
-
-
-
-
-
-
-
             MongoClient.connect(url, function(err, db) {
                 db.collections(function(err,collections){
                     for(i=0;i<collections.length-1;i++){
@@ -200,18 +185,16 @@ var MongoClient = require('mongodb').MongoClient;
                     socket.emit('send_collection',item_list);
                 })
                 });
-
-
         })
+
+            // to get database names
 
        socket.on('names',function(data){
             var url = 'mongodb://localhost:27017/';
             MongoClient.connect(url, function(err, db) {
             var items_list=[];
                 db.admin().listDatabases(function (err, items) {
-
                 for(i=0;i<items.databases.length-2;i++) {
-
                     items_list.push(items.databases[i].name);
                 }
                     console.log(items_list);
@@ -219,9 +202,6 @@ var MongoClient = require('mongodb').MongoClient;
                 })
             })
        })
-
-
-// done
 
 
     })
