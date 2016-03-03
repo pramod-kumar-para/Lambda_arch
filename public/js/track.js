@@ -13,7 +13,8 @@
         browser: navigator.appName,
         page_url: location.href,
         page_name:document.title,
-        domain_name:location.hostname,
+        //domain_name:location.hostname,
+        domain_name:'google',
         event_name:'page_views'
     }
 

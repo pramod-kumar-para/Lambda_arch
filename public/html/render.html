@@ -57,8 +57,14 @@
 
 $('#view').hide();
 var query_data={
-    database_name:'lambda_arch'
+    //database_name:location.hostname
+    database_name:'google'
 }
+
+$('#chart1').click(function(){
+    generate(document.getElementById('view').textContent)
+})
+
 
     function set_event(event_name,name){
         document.getElementById('view1').text=name;
@@ -89,12 +95,7 @@ var query_data={
     })
 
 
-$('#chart1').click(function(){
 
-    generate(document.getElementById('view').text);
-    return;
-
-});
 function generate(type){
         document.getElementById('view').text=type;
 

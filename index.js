@@ -19,14 +19,7 @@ var MongoClient = require('mongodb').MongoClient;
 var url = 'mongodb://localhost:27017/lambda_arch';
 
 
-    mongoose.connect('mongodb://localhost/lambda_arch',function(err){
 
-        if(err)
-            console.error('Connection failed ,Check if Mongo instance is started?')
-        else
-            console.log('[INFO] '+'MONGODB:Connection established successfully');
-
-    })
 
             // allows static file serving through url, public is the root directory
 
@@ -109,24 +102,45 @@ var url = 'mongodb://localhost:27017/lambda_arch';
             })
 
             // connect to database
+            mongoose.connect('mongodb://localhost/'+data.domainName,function(err){
 
+                if(err)
+                    console.error('Connection failed ,Check if Mongo instance is started?')
+                else
+                    console.log('[INFO] '+'MONGODB:Connection established successfully');
 
+            })
 
             // inserting all registered users into the database
 
-            db.collection('registered_users').insert(data,function(response){
+            db.collection(data.domainName).insert(data,function(response){
                     console.log(response);
 
+                mongoose.disconnect();
             });
+
 
         })
 
         socket.on('custom_data',function(data){
             // inserting all page data into the database
-            console.log(data.event_name);
+
+            console.log('custom_data');
+            // connect to database
+            mongoose.connect('mongodb://localhost/'+data.domain_name,function(err){
+
+                if(err)
+                    console.error('Connection failed ,Check if Mongo instance is started?')
+                else
+                    console.log('[INFO] '+'MONGODB:Connection established successfully');
+
+            })
+
+            // inserting all registered users into the database
+
             db.collection(data.event_name.toString()).insert(data,function(response){
                 console.log(response);
-
+                mongoose.disconnect();
             });
         })
 
@@ -134,6 +148,12 @@ var url = 'mongodb://localhost:27017/lambda_arch';
             console.log(data);
             var domain_name=data;
             var url = 'mongodb://localhost:27017/'+data.database_name;
+
+
+
+
+
+
 
             MongoClient.connect(url, function(err, db) {
 
