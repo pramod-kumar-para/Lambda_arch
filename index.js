@@ -16,7 +16,6 @@ var nodeMailer=require('nodemailer');
 var crypto=require('crypto');
 var smtpTransport = require('nodemailer-smtp-transport');
 var MongoClient = require('mongodb').MongoClient;
-var url = 'mongodb://localhost:27017/lambda_arch';
 
 
 
@@ -149,12 +148,6 @@ var url = 'mongodb://localhost:27017/lambda_arch';
             var domain_name=data;
             var url = 'mongodb://localhost:27017/'+data.database_name;
 
-
-
-
-
-
-
             MongoClient.connect(url, function(err, db) {
 
                 aggregateData(db, function() {
@@ -193,12 +186,20 @@ var url = 'mongodb://localhost:27017/lambda_arch';
         })
 
 
-        socket.on('get_collection',function(){
+        socket.on('get_collection',function(data){
             var item_list=[]
+            var url = 'mongodb://localhost:27017/'+data.database_name;
+
+
+
+
+
+
+
+
             MongoClient.connect(url, function(err, db) {
                 db.collections(function(err,collections){
-                    for(i=0;i<collections.length;i++){
-
+                    for(i=0;i<collections.length-1;i++){
                         item_list.push(collections[i].namespace.toString().split('.')[1]);
                     console.log(item_list)
                     }
@@ -209,9 +210,22 @@ var url = 'mongodb://localhost:27017/lambda_arch';
 
         })
 
-     // db.admin().listDatabases(function(err,items){
-       //     console.log(items);
-        //})
+       socket.on('names',function(data){
+            var url = 'mongodb://localhost:27017/';
+            MongoClient.connect(url, function(err, db) {
+            var items_list=[];
+                db.admin().listDatabases(function (err, items) {
+
+                for(i=0;i<items.databases.length-2;i++) {
+
+                    items_list.push(items.databases[i].name);
+                }
+                    console.log(items_list);
+                    socket.emit('database_list',items_list);
+                })
+            })
+       })
+
 
 
 

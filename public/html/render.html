@@ -24,6 +24,18 @@
 <script src="http://localhost:9090/track"></script>
 
 <div class="container">
+    <div class="row">
+        <form class="col s12">
+            <div class="row">
+                <div class="input-field col s12">
+                    <input id="domain" type="text" class="validate">
+                    <label for="domain" >Domain</label>
+                </div>
+
+            </div>
+        </form>
+    </div>
+
 
 
 
@@ -56,6 +68,8 @@
 <script type="text/javascript">
 
 $('#view').hide();
+
+
 var query_data={
     //database_name:location.hostname
     database_name:'google'
@@ -75,7 +89,6 @@ $('#chart1').click(function(){
 
     (function($) {
         $(function() {
-
             $('.dropdown-button').dropdown({
                         inDuration: 300,
                         outDuration: 225,
@@ -84,13 +97,16 @@ $('#chart1').click(function(){
                         alignment: 'right' // Displays dropdown with edge aligned to the left of button
                     }
             );
-
         }); // End Document Ready
     })(jQuery); // End of jQuery name space
 
     var socket=io.connect('http://localhost:9090');
-    socket.emit('get_collection');
-    socket.on('send_collection',function(data){
+  socket.emit('get_collection',query_data);
+    socket.emit('names',query_data)
+    socket.on('database_list',function(data){
+        console.log(data);
+    })
+socket.on('send_collection',function(data){
         console.log(data);
     })
 
@@ -101,6 +117,8 @@ function generate(type){
 
         var gen_data=[];
         var socket=io.connect('http://localhost:9090');
+
+        query_data.database_name=document.getElementById('domain').value;
         socket.emit('get_data',query_data);
         socket.on('send_response',function(data){
             gen_data=data;
